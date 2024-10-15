@@ -1,0 +1,189 @@
+Q 1. Answer
+
+import java.util.Scanner;
+
+public class StringNormalizer {
+    public static void main(String[] args) {
+        
+        Scanner scanner = new Scanner(System.in);
+        
+        String input = scanner.nextLine();
+        
+        String normalizedString = normalizeString(input);
+
+        System.out.println(normalizedString);
+
+        scanner.close();
+    }
+
+    public static String normalizeString(String input) {
+
+        String trimmed = input.trim();
+ 
+        String alphanumeric = trimmed.replaceAll("[^a-zA-Z0-9 ]", "");
+  
+        String singleSpaced = alphanumeric.replaceAll("\\s+", " ");
+
+        String[] words = singleSpaced.split(" ");
+        StringBuilder camelCaseString = new StringBuilder();
+        
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                camelCaseString.append(Character.toUpperCase(word.charAt(0)))
+                               .append(word.substring(1).toLowerCase())
+                               .append(" ");
+            }
+        }
+
+        return camelCaseString.toString().trim();
+    }
+}
+
+
+Q 2. Answer
+
+import java.util.*;
+
+public class SimpleChatbot {
+    public static void main(String[] args) {
+
+        Map<String, String> qaPairs = new HashMap<>();
+        qaPairs.put("What is your name?", "My name is Chatbot.");
+        qaPairs.put("How can I help you?", "I can assist you with your queries.");
+        qaPairs.put("What is the weather today?", "The weather is sunny.");
+ 
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Ask me a question:");
+        String userQuestion = scanner.nextLine();
+
+        String closestAnswer = findClosestAnswer(userQuestion, qaPairs);
+
+        System.out.println(closestAnswer);
+
+        scanner.close();
+    }
+
+    public static String findClosestAnswer(String userQuestion, Map<String, String> qaPairs) {
+        String closestQuestion = null;
+        int highestMatchCount = 0;
+
+        String[] userWords = userQuestion.toLowerCase().split("\\s+");
+
+        for (String question : qaPairs.keySet()) {
+            String[] questionWords = question.toLowerCase().split("\\s+");
+            int matchCount = 0;
+
+            for (String userWord : userWords) {
+                for (String questionWord : questionWords) {
+                    if (userWord.equals(questionWord)) {
+                        matchCount++;
+                    }
+                }
+            }
+
+            if (matchCount > highestMatchCount) {
+                highestMatchCount = matchCount;
+                closestQuestion = question;
+            }
+        }
+
+        if (closestQuestion != null) {
+            return qaPairs.get(closestQuestion);
+        } else {
+            return "I'm sorry, I can't understand your question.";
+        }
+    }
+}
+
+Q 3. Answer
+
+import java.util.*;
+
+class College {
+    String name;
+    String location;
+    int fees;
+    int ranking;
+
+    public College(String name, String location, int fees, int ranking) {
+        this.name = name;
+        this.location = location;
+        this.fees = fees;
+        this.ranking = ranking;
+    }
+
+    public double calculateScore(int rankingWeight, int feesWeight, int maxFees) {
+        return (ranking * rankingWeight) + ((double) fees / maxFees * feesWeight);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Name: %s, Location: %s, Fees: %d, Ranking: %d", name, location, fees, ranking);
+    }
+}
+
+public class CollegeRanking {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of colleges: ");
+        int n = scanner.nextInt();
+        scanner.nextLine(); 
+
+        List<College> colleges = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            System.out.println("Enter details for College " + (i + 1) + ":");
+            System.out.print("Name: ");
+            String name = scanner.nextLine();
+            System.out.print("Location: ");
+            String location = scanner.nextLine();
+            System.out.print("Fees: ");
+            int fees = scanner.nextInt();
+            System.out.print("Ranking: ");
+            int ranking = scanner.nextInt();
+            scanner.nextLine(); 
+
+            colleges.add(new College(name, location, fees, ranking));
+        }
+
+        System.out.print("Enter your preferred location: ");
+        String preferredLocation = scanner.nextLine();
+
+        System.out.print("Enter the maximum fees you are willing to pay: ");
+        int maxFees = scanner.nextInt();
+
+        System.out.print("Enter ranking weight: ");
+        int rankingWeight = scanner.nextInt();
+
+        System.out.print("Enter fees weight: ");
+        int feesWeight = scanner.nextInt();
+
+        List<College> rankedColleges = rankColleges(colleges, preferredLocation, maxFees, rankingWeight, feesWeight);
+
+        System.out.println("\nColleges that match your preferences, sorted by score:");
+        for (College college : rankedColleges) {
+            double score = college.calculateScore(rankingWeight, feesWeight, maxFees);
+            System.out.printf("%s, Score: %.2f\n", college, score);
+        }
+        scanner.close();
+    }
+
+    public static List<College> rankColleges(List<College> colleges, String preferredLocation, int maxFees,
+                                             int rankingWeight, int feesWeight) {
+
+        List<College> filteredColleges = new ArrayList<>();
+        for (College college : colleges) {
+            if (college.location.equals(preferredLocation) && college.fees <= maxFees) {
+                filteredColleges.add(college);
+            }
+        }
+
+        filteredColleges.sort(Comparator.comparingDouble(c -> c.calculateScore(rankingWeight, feesWeight, maxFees)));
+
+        return filteredColleges;
+    }
+}
+
+
